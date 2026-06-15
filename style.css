@@ -78,3 +78,43 @@ body.pedco-hide-bars #page.drawers {
     margin-top: 0 !important;
     padding-top: 0 !important;
 }
+
+/* ==========================================
+   BOTÓN VOLVER ARRIBA
+   ========================================== */
+#pedco-back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 46px;
+    height: 46px;
+    background-color: #0f4c81; /* Azul PEDCO/Moodle */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.4);
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#pedco-back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+#pedco-back-to-top:hover {
+    background-color: #0b3a63;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(15, 76, 129, 0.6);
+}
+
+#pedco-back-to-top:active {
+    transform: translateY(0) scale(0.95);
+}

@@ -53,14 +53,64 @@ window.addEventListener('mousemove', (e) => {
   }
 });
 
-window.addEventListener('scroll', (e) => {
-  if (isAnimating) return;
+// ==========================================
+// BOTÓN VOLVER ARRIBA
+// ==========================================
+function injectBackToTop() {
+  if (document.getElementById('pedco-back-to-top')) return;
+  const btn = document.createElement('div');
+  btn.id = 'pedco-back-to-top';
+  btn.title = 'Volver arriba';
+  btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`;
+  document.body.appendChild(btn);
+  
+  btn.addEventListener('click', () => {
+    const opts = { top: 0, behavior: 'smooth' };
+    // Scroll a todo lo posible porque Moodle 4 usa contenedores internos
+    try { window.scrollTo(opts); } catch(e){}
+    try { document.documentElement.scrollTo(opts); } catch(e){}
+    try { document.body.scrollTo(opts); } catch(e){}
+    
+    const page = document.getElementById('page');
+    if (page) try { page.scrollTo(opts); } catch(e){}
+    
+    const wrapper = document.getElementById('page-wrapper');
+    if (wrapper) try { wrapper.scrollTo(opts); } catch(e){}
+    
+    if (window.pedcoScrollContainer) {
+      try { window.pedcoScrollContainer.scrollTo(opts); } catch(e){}
+    }
+    
+    window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
+    document.body.classList.remove('pedco-hide-bars');
+  });
+}
+injectBackToTop();
 
+window.addEventListener('scroll', (e) => {
   let currentScrollY = window.scrollY || document.documentElement.scrollTop;
-  if (currentScrollY === 0 && e.target && e.target.scrollTop !== undefined) {
-    currentScrollY = e.target.scrollTop;
+  
+  // Detectar scroll interno de Moodle 4 de forma robusta
+  if (e.target && e.target.nodeType === 1) {
+    if (e.target.id === 'page' || e.target.id === 'page-wrapper' || e.target.classList.contains('drawers') || e.target.clientHeight >= window.innerHeight - 50) {
+      currentScrollY = e.target.scrollTop;
+      window.pedcoScrollContainer = e.target; // Guardar el contenedor que scrollea
+    }
   }
   
+  // 1. LÓGICA DEL BOTÓN VOLVER ARRIBA (Siempre se ejecuta, no se bloquea)
+  const backToTop = document.getElementById('pedco-back-to-top');
+  if (backToTop) {
+    if (currentScrollY > 300) {
+      backToTop.classList.add('visible');
+    } else {
+      backToTop.classList.remove('visible');
+    }
+  }
+
+  // 2. LÓGICA DE BARRAS DE NAVEGACIÓN (Se bloquea si está animando)
+  if (isAnimating) return;
+
   if (Math.abs(currentScrollY - lastScrollY) > 5) {
     if (currentScrollY > 60 && currentScrollY > lastScrollY) {
       if (!document.body.classList.contains('pedco-hide-bars')) {
@@ -130,6 +180,7 @@ function injectToolbar() {
 
 setInterval(() => {
   injectToolbar();
+  injectBackToTop();
   
   if (window.location.href !== pedcoLastUrl) {
     pedcoLastUrl = window.location.href;

@@ -151,6 +151,7 @@ function injectToolbar() {
       <button id="pedco-btn-forward" title="Adelante" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">▶</button>
       <button id="pedco-btn-refresh" title="Recargar" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">🔄</button>
       <button id="pedco-btn-home" title="Mis Cursos" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">🏠</button>
+      <button id="pedco-btn-acc" title="Accesibilidad" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">♿</button>
       <div id="pedco-url-bar" style="flex: 1; font-size: 11px; color: #6b7280; padding: 4px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: all; max-width: 250px;">
         ${window.location.href}
       </div>
@@ -174,6 +175,7 @@ function injectToolbar() {
   document.getElementById('pedco-btn-forward').onclick = () => window.parent.postMessage({ type: 'pedco_nav', action: 'forward' }, '*');
   document.getElementById('pedco-btn-refresh').onclick = () => window.parent.postMessage({ type: 'pedco_nav', action: 'refresh' }, '*');
   document.getElementById('pedco-btn-home').onclick = () => window.parent.postMessage({ type: 'pedco_nav', action: 'home' }, '*');
+  document.getElementById('pedco-btn-acc').onclick = () => { if (window.pedcoOpenAccessibility) window.pedcoOpenAccessibility(); };
   
   window.parent.postMessage({ type: 'pedco_injected' }, '*');
 }
@@ -181,6 +183,7 @@ function injectToolbar() {
 setInterval(() => {
   injectToolbar();
   injectBackToTop();
+  if (window.pedcoInitAccessibility) window.pedcoInitAccessibility();
   
   if (window.location.href !== pedcoLastUrl) {
     pedcoLastUrl = window.location.href;

@@ -1,0 +1,178 @@
+/* accessibility.css */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
+
+/* Modal design */
+#pedco-acc-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  z-index: 9999999;
+  width: 340px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+#pedco-acc-modal.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#pedco-acc-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+}
+
+#pedco-acc-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal UI */
+.pedco-acc-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+  border-radius: 12px 12px 0 0;
+}
+.pedco-acc-header h3 { margin: 0; font-size: 16px; color: #111827; font-weight: bold; }
+.pedco-acc-close { cursor: pointer; font-size: 22px; color: #6b7280; line-height: 1; }
+.pedco-acc-close:hover { color: #111827; }
+.pedco-acc-body { padding: 20px; }
+
+.pedco-acc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+.pedco-acc-row:last-child { margin-bottom: 0; }
+
+/* Switches */
+.pedco-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+}
+.pedco-switch input { opacity: 0; width: 0; height: 0; margin: 0; }
+.pedco-slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #d1d5db;
+  transition: .3s;
+  border-radius: 24px;
+}
+.pedco-slider:before {
+  position: absolute; content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.pedco-switch input:checked + .pedco-slider { background-color: #3b82f6; }
+.pedco-switch input:checked + .pedco-slider:before { transform: translateX(20px); }
+
+/* == ACCESSIBILITY FEATURES == */
+/* Dyslexic Font */
+body.pedco-dyslexic * {
+  font-family: 'Lexend', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.5px !important;
+  word-spacing: 1px !important;
+  line-height: 1.6 !important;
+}
+
+/* High Contrast */
+body.pedco-high-contrast {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+/* Aplicar oscuro a todo MENOS a nuestros propios elementos (para no romper el modal ni la barra) */
+body.pedco-high-contrast *:not(#pedco-acc-modal, #pedco-acc-modal *, #pedco-acc-backdrop, #pedco-injected-toolbar, #pedco-injected-toolbar *, #pedco-back-to-top, #pedco-back-to-top *) {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+/* Solo subrayar y pintar de azul los links de contenido, no los de la barra superior ni botones */
+body.pedco-high-contrast a:not(#pedco-acc-modal *, .navbar *, .nav-link, .btn, .dropdown-item, .page-link, .list-group-item) {
+  color: #60a5fa !important;
+  text-decoration: underline !important;
+}
+
+/* Hacer visible el menú hamburguesa nativo de Moodle (reemplazando por SVG blanco y ganando especificidad) */
+body.pedco-high-contrast .navbar-toggler-icon:not(#pedco-acc-modal) {
+  background-color: transparent !important;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.9)' stroke-width='2.5' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+  filter: none !important;
+}
+
+body.pedco-high-contrast img:not(.icon) {
+  filter: brightness(.8) contrast(1.2);
+}
+
+/* == ADAPTAR NUESTRO MODAL AL MODO OSCURO == */
+body.pedco-high-contrast #pedco-acc-modal {
+  background: #1e1e1e !important;
+  color: #fff !important;
+  border: 1px solid #444;
+}
+body.pedco-high-contrast .pedco-acc-header {
+  background: #2d2d2d !important;
+  border-bottom: 1px solid #444 !important;
+}
+body.pedco-high-contrast .pedco-acc-header h3 {
+  color: #fff !important;
+}
+body.pedco-high-contrast .pedco-acc-close {
+  color: #bbb !important;
+}
+body.pedco-high-contrast .pedco-acc-close:hover {
+  color: #fff !important;
+}
+
+/* == ADAPTAR NUESTRA BARRA INYECTADA AL MODO OSCURO == */
+body.pedco-high-contrast #pedco-injected-toolbar button {
+  background: #333333 !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+body.pedco-high-contrast #pedco-injected-toolbar button:hover {
+  background: #444444 !important;
+}
+body.pedco-high-contrast #pedco-url-bar {
+  background: #1a1a1a !important;
+  border-color: #444 !important;
+  color: #e5e7eb !important;
+}
+
+/* Highlight Links */
+body.pedco-highlight-links a {
+  background-color: #fef08a !important;
+  color: #000 !important;
+  padding: 2px 4px !important;
+  border-bottom: 2px solid #ca8a04 !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}

@@ -27,8 +27,8 @@
   "content_scripts": [
     {
       "matches": ["*://pedco.uncoma.edu.ar/*"],
-      "css": ["styles/style.css"],
-      "js": ["scripts/content.js"],
+      "css": ["styles/style.css", "accesibilidad/accessibility.css"],
+      "js": ["scripts/content.js", "accesibilidad/accessibility.js"],
       "all_frames": true
     }
   ],

@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "PEDCO Mejorado",
+  "version": "1.0",
+  "description": "Panel lateral y mejoras visuales para PEDCO UNCo",
+  "permissions": [
+    "storage", 
+    "declarativeNetRequest",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://pedco.uncoma.edu.ar/*"],
+      "css": ["style.css"],
+      "js": ["content.js"],
+      "all_frames": true
+    }
+  ],
+  "sidebar_action": {
+    "default_title": "PEDCO+",
+    "default_panel": "sidebar.html"
+  }
+}

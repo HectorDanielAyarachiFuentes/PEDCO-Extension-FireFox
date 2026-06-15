@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f4f4f4; display: flex; flex-direction: column; }
+    .toolbar { display: flex; padding: 6px 10px; background: #ffffff; border-bottom: 1px solid #eaeaea; gap: 8px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-shrink: 0; }
+    .toolbar button { padding: 5px 12px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 15px; transition: all 0.15s; color: #374151; }
+    .toolbar button:hover { background: #e5e7eb; border-color: #9ca3af; }
+    .toolbar button:active { background: #d1d5db; }
+    .toolbar button:disabled { opacity: 0.35; cursor: default; }
+    #url-bar { font-size: 10px; color: #888; padding: 3px 10px; background: #fafafa; border-bottom: 1px solid #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    iframe { flex: 1; width: 100%; border: none; background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button id="btn-back" title="Atrás" disabled>◀</button>
+    <button id="btn-forward" title="Adelante" disabled>▶</button>
+    <button id="btn-refresh" title="Recargar">🔄</button>
+    <button id="btn-home" title="Mis Cursos">🏠</button>
+  </div>
+  <div id="url-bar">https://pedco.uncoma.edu.ar/my/</div>
+  <iframe id="pedco-frame" src="https://pedco.uncoma.edu.ar/my/"></iframe>
+  <script src="sidebar.js"></script>
+</body>
+</html>

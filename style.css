@@ -1,0 +1,11 @@
+.pedco-dark{
+ background:#111!important;
+ color:#eee!important;
+}
+
+.pedco-dark .card,
+.pedco-dark .coursebox,
+.pedco-dark .activity{
+ background:#222!important;
+ color:white!important;
+}

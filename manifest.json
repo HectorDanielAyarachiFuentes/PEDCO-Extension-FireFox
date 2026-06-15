@@ -22,19 +22,19 @@
     ]
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["scripts/background.js"]
   },
   "content_scripts": [
     {
       "matches": ["*://pedco.uncoma.edu.ar/*"],
-      "css": ["style.css"],
-      "js": ["content.js"],
+      "css": ["styles/style.css"],
+      "js": ["scripts/content.js"],
       "all_frames": true
     }
   ],
   "sidebar_action": {
     "default_title": "PEDCO+",
-    "default_panel": "sidebar.html",
+    "default_panel": "views/sidebar.html",
     "default_icon": "icons/PEDCO_Blanco.png"
   },
   "action": {

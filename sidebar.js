@@ -16,7 +16,19 @@ updateButtons();
 
 // Recibimos la URL desde content.js vía postMessage
 window.addEventListener('message', function(event) {
-  if (!event.data || event.data.type !== 'pedco_url') return;
+  if (!event.data) return;
+  
+  if (event.data.type === 'pedco_scroll') {
+    var toolbar = document.querySelector('.toolbar');
+    if (event.data.direction === 'down') {
+      toolbar.classList.add('hidden');
+    } else {
+      toolbar.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (event.data.type !== 'pedco_url') return;
 
   var newUrl = event.data.url;
   urlBar.textContent = newUrl;

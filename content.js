@@ -36,3 +36,23 @@ chrome.runtime.onMessage.addListener(function(request) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
+
+// ==========================================
+// SCROLL DETECTION (Ocultar barra automáticamente)
+// ==========================================
+let lastScrollY = window.scrollY;
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+  
+  // Evitar disparar en cada píxel (throttle rústico)
+  if (Math.abs(currentScrollY - lastScrollY) > 8) {
+    if (currentScrollY > lastScrollY && currentScrollY > 60) {
+      // Scrolleando hacia abajo (ocultar barra)
+      window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
+    } else if (currentScrollY < lastScrollY || currentScrollY < 20) {
+      // Scrolleando hacia arriba o en la cima (mostrar barra)
+      window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
+    }
+    lastScrollY = currentScrollY;
+  }
+}, { passive: true });

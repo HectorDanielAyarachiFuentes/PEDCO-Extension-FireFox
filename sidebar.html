@@ -5,21 +5,22 @@
   <style>
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f4f4f4; display: flex; flex-direction: column; }
     
-    /* Barra principal compacta (AHORA ABAJO) */
+    /* Barra principal compacta */
     .toolbar { 
       display: flex; 
       padding: 6px 8px; 
       background: #ffffff; 
-      border-top: 1px solid #e5e7eb; 
+      border-bottom: 1px solid #e5e7eb; 
       gap: 6px; 
       align-items: center; 
-      box-shadow: 0 -1px 3px rgba(0,0,0,0.05); 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
       flex-shrink: 0; 
-      transition: margin-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      transition: margin-top 0.4s ease, opacity 0.4s ease;
+      height: 26px; /* 42px total con padding */
     }
     
     .toolbar.hidden {
-      margin-bottom: -42px; /* Baja la barra entera fuera de la vista */
+      margin-top: -42px; /* Sube la barra entera fuera de la vista */
       opacity: 0;
       pointer-events: none;
     }
@@ -62,9 +63,6 @@
   </style>
 </head>
 <body>
-  
-  <iframe id="pedco-frame" src="https://pedco.uncoma.edu.ar/my/"></iframe>
-
   <div class="toolbar">
     <button id="btn-back" title="Atrás" disabled>◀</button>
     <button id="btn-forward" title="Adelante" disabled>▶</button>
@@ -74,6 +72,8 @@
     <!-- La URL ahora está DENTRO de la barra de herramientas, al lado de los botones -->
     <div id="url-bar">https://pedco.uncoma.edu.ar/my/</div>
   </div>
+  
+  <iframe id="pedco-frame" src="https://pedco.uncoma.edu.ar/my/"></iframe>
   
   <script src="sidebar.js"></script>
 </body>

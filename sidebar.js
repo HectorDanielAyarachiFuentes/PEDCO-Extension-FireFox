@@ -11,12 +11,34 @@ var weNavigated = false;
 function updateButtons() {
   btnBack.disabled = historyStack.length <= 1;
   btnForward.disabled = forwardStack.length === 0;
+  
+  if (frame.contentWindow) {
+    frame.contentWindow.postMessage({
+      type: 'pedco_state',
+      canBack: !btnBack.disabled,
+      canForward: !btnForward.disabled
+    }, '*');
+  }
 }
 updateButtons();
 
 // Recibimos la URL desde content.js vía postMessage
 window.addEventListener('message', function(event) {
   if (!event.data) return;
+  
+  if (event.data.type === 'pedco_injected') {
+    document.querySelector('.toolbar').style.display = 'none'; // Ocultar barra nativa
+    updateButtons();
+    return;
+  }
+  
+  if (event.data.type === 'pedco_nav') {
+    if (event.data.action === 'back') btnBack.click();
+    if (event.data.action === 'forward') btnForward.click();
+    if (event.data.action === 'refresh') document.getElementById('btn-refresh').click();
+    if (event.data.action === 'home') document.getElementById('btn-home').click();
+    return;
+  }
   
   if (event.data.type === 'pedco_scroll') {
     var toolbar = document.querySelector('.toolbar');
@@ -32,6 +54,7 @@ window.addEventListener('message', function(event) {
 
   var newUrl = event.data.url;
   urlBar.textContent = newUrl;
+  document.querySelector('.toolbar').classList.remove('hidden');
 
   if (weNavigated) {
     weNavigated = false;
@@ -45,6 +68,12 @@ window.addEventListener('message', function(event) {
     forwardStack.length = 0;
   }
   updateButtons();
+});
+
+// Seguridad adicional: si cambia la página en el iframe (ej: un PDF), forzar la aparición
+frame.addEventListener('load', function() {
+  document.querySelector('.toolbar').classList.remove('hidden');
+  document.querySelector('.toolbar').style.display = 'flex'; // Visible por defecto como fallback
 });
 
 // === BOTONES ===

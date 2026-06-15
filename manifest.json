@@ -37,6 +37,10 @@
     "default_panel": "sidebar.html",
     "default_icon": "icons/PEDCO_Blanco.png"
   },
+  "action": {
+    "default_title": "Abrir PEDCO+",
+    "default_icon": "icons/PEDCO_Blanco.png"
+  },
   "icons": {
     "48": "icons/PEDCO_Blanco.png",
     "96": "icons/PEDCO_Blanco.png",

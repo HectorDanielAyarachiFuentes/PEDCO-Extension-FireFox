@@ -26,3 +26,13 @@ try {
     api.storage.local.set({ bg_error: e.message });
   } catch(e2) {}
 }
+
+// Abrir sidebar al hacer clic en el ícono de la barra de herramientas
+try {
+  api.action.onClicked.addListener(function() {
+    api.sidebarAction.toggle();
+  });
+} catch(e) {
+  console.error(e);
+}
+

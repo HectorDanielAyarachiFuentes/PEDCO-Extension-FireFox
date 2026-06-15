@@ -166,13 +166,23 @@ body.pedco-high-contrast #pedco-url-bar {
   color: #e5e7eb !important;
 }
 
-/* Highlight Links */
-body.pedco-highlight-links a {
+/* == RESALTAR ENLACES == */
+/* Solo aplicamos el resaltado a enlaces de texto reales (contenido), ignorando botones, barras de navegación y menús laterales */
+body.pedco-highlight-links a:not(#pedco-acc-modal *, #pedco-injected-toolbar *, .nav-link, .btn, .dropdown-item, .list-group-item, .page-link, .menu-action, .navbar-brand, .close) {
   background-color: #fef08a !important;
-  color: #000 !important;
-  padding: 2px 4px !important;
+  color: #111827 !important;
+  padding: 2px 6px !important;
   border-bottom: 2px solid #ca8a04 !important;
-  border-radius: 4px !important;
+  border-radius: 6px !important;
   text-decoration: none !important;
-  font-weight: bold !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+  transition: all 0.2s ease !important;
+  display: inline-block !important;
+}
+
+body.pedco-highlight-links a:not(#pedco-acc-modal *, #pedco-injected-toolbar *, .nav-link, .btn, .dropdown-item, .list-group-item, .page-link, .menu-action, .navbar-brand, .close):hover {
+  background-color: #fde047 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
 }

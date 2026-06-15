@@ -40,19 +40,21 @@ chrome.runtime.onMessage.addListener(function(request) {
 // ==========================================
 // SCROLL DETECTION (Ocultar barra automáticamente)
 // ==========================================
-let lastScrollY = window.scrollY;
-window.addEventListener('scroll', () => {
-  const currentScrollY = window.scrollY;
+let lastScrollY = 0;
+// Usamos true (capture phase) para atrapar el scroll incluso si ocurre dentro de un div (como el de Moodle)
+window.addEventListener('scroll', (e) => {
+  // Moodle a veces scrollea la ventana, a veces un contenedor
+  let currentScrollY = window.scrollY || document.documentElement.scrollTop;
+  if (currentScrollY === 0 && e.target && e.target.scrollTop !== undefined) {
+    currentScrollY = e.target.scrollTop;
+  }
   
-  // Evitar disparar en cada píxel (throttle rústico)
   if (Math.abs(currentScrollY - lastScrollY) > 8) {
     if (currentScrollY > lastScrollY && currentScrollY > 60) {
-      // Scrolleando hacia abajo (ocultar barra)
       window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
     } else if (currentScrollY < lastScrollY || currentScrollY < 20) {
-      // Scrolleando hacia arriba o en la cima (mostrar barra)
       window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
     }
     lastScrollY = currentScrollY;
   }
-}, { passive: true });
+}, true);

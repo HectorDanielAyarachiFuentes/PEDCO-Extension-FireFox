@@ -4,12 +4,53 @@
   <meta charset="utf-8">
   <style>
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f4f4f4; display: flex; flex-direction: column; }
-    .toolbar { display: flex; padding: 6px 10px; background: #ffffff; border-bottom: 1px solid #eaeaea; gap: 8px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-shrink: 0; }
-    .toolbar button { padding: 5px 12px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 15px; transition: all 0.15s; color: #374151; }
+    
+    /* Barra principal compacta */
+    .toolbar { 
+      display: flex; 
+      padding: 6px 8px; 
+      background: #ffffff; 
+      border-bottom: 1px solid #e5e7eb; 
+      gap: 6px; 
+      align-items: center; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+      flex-shrink: 0; 
+    }
+    
+    /* Botones más ajustados */
+    .toolbar button { 
+      padding: 4px 8px; 
+      cursor: pointer; 
+      border: 1px solid #d1d5db; 
+      border-radius: 6px; 
+      background: #f9fafb; 
+      font-size: 13px; 
+      transition: all 0.15s; 
+      color: #374151; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
     .toolbar button:hover { background: #e5e7eb; border-color: #9ca3af; }
     .toolbar button:active { background: #d1d5db; }
     .toolbar button:disabled { opacity: 0.35; cursor: default; }
-    #url-bar { font-size: 10px; color: #888; padding: 3px 10px; background: #fafafa; border-bottom: 1px solid #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    
+    /* URL bar estilo "address bar" de navegador */
+    #url-bar { 
+      flex: 1; /* Ocupa el resto del espacio */
+      font-size: 11px; 
+      color: #6b7280; 
+      padding: 4px 8px; 
+      background: #f3f4f6; 
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      user-select: all; /* Para poder copiar la URL fácil */
+    }
+    
     iframe { flex: 1; width: 100%; border: none; background: #fff; }
   </style>
 </head>
@@ -19,9 +60,13 @@
     <button id="btn-forward" title="Adelante" disabled>▶</button>
     <button id="btn-refresh" title="Recargar">🔄</button>
     <button id="btn-home" title="Mis Cursos">🏠</button>
+    
+    <!-- La URL ahora está DENTRO de la barra de herramientas, al lado de los botones -->
+    <div id="url-bar">https://pedco.uncoma.edu.ar/my/</div>
   </div>
-  <div id="url-bar">https://pedco.uncoma.edu.ar/my/</div>
+  
   <iframe id="pedco-frame" src="https://pedco.uncoma.edu.ar/my/"></iframe>
+  
   <script src="sidebar.js"></script>
 </body>
 </html>

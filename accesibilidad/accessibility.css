@@ -186,3 +186,19 @@ body.pedco-highlight-links a:not(#pedco-acc-modal *, #pedco-injected-toolbar *, 
   transform: translateY(-1px) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
 }
+
+/* == LECTOR DE VOZ (HOVER READER) == */
+.pedco-reading {
+  outline: 3px solid #3b82f6 !important;
+  background-color: #eff6ff !important;
+  color: #111827 !important;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important;
+  transition: outline 0.2s, background-color 0.2s !important;
+}
+
+body.pedco-high-contrast .pedco-reading {
+  background-color: #1e3a8a !important;
+  color: #ffffff !important;
+  outline-color: #60a5fa !important;
+}

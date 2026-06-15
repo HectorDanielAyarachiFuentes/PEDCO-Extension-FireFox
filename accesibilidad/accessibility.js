@@ -2,7 +2,8 @@
 const ACC_STATE = {
   dyslexic: false,
   highContrast: false,
-  highlightLinks: false
+  highlightLinks: false,
+  voiceReader: false
 };
 
 function initAccessibility() {
@@ -16,12 +17,17 @@ function initAccessibility() {
   
   applyAccessibility();
   injectAccessibilityModal();
+  setupVoiceReader();
 }
 
 function applyAccessibility() {
   document.body.classList.toggle('pedco-dyslexic', ACC_STATE.dyslexic);
   document.body.classList.toggle('pedco-high-contrast', ACC_STATE.highContrast);
   document.body.classList.toggle('pedco-highlight-links', ACC_STATE.highlightLinks);
+  
+  if (!ACC_STATE.voiceReader) {
+    stopReading();
+  }
 }
 
 function saveAccessibility() {
@@ -65,6 +71,13 @@ function injectAccessibilityModal() {
           <span class="pedco-slider"></span>
         </label>
       </div>
+      <div class="pedco-acc-row">
+        <span>Lector de Voz al posar mouse 🗣️</span>
+        <label class="pedco-switch">
+          <input type="checkbox" id="pedco-toggle-voice" ${ACC_STATE.voiceReader ? 'checked' : ''}>
+          <span class="pedco-slider"></span>
+        </label>
+      </div>
     </div>
   `;
   document.body.appendChild(modal);
@@ -85,6 +98,10 @@ function injectAccessibilityModal() {
     ACC_STATE.highlightLinks = e.target.checked;
     saveAccessibility();
   };
+  document.getElementById('pedco-toggle-voice').onchange = (e) => {
+    ACC_STATE.voiceReader = e.target.checked;
+    saveAccessibility();
+  };
 }
 
 function openAccModal() {
@@ -103,6 +120,77 @@ function closeAccModal() {
   if (backdrop && modal) {
     backdrop.classList.remove('visible');
     modal.classList.remove('visible');
+  }
+}
+
+// == LECTOR DE VOZ LOGIC ==
+let voiceHoverTimer = null;
+let currentReadingElement = null;
+
+function setupVoiceReader() {
+  document.body.addEventListener('mouseover', handleVoiceMouseOver);
+  document.body.addEventListener('mouseout', handleVoiceMouseOut);
+}
+
+function handleVoiceMouseOver(e) {
+  if (!ACC_STATE.voiceReader) return;
+  
+  // Find a meaningful text container
+  const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, button, .coursebox, .card, .alert, .activity-item');
+  if (!target) return;
+  
+  // Don't read our own accessibility modal or toolbar
+  if (target.closest('#pedco-acc-modal, #pedco-injected-toolbar, #pedco-back-to-top')) return;
+
+  const text = target.innerText || target.textContent;
+  if (!text || text.trim().length === 0) return;
+
+  // Debounce: wait 500ms to see if user stays on the element
+  clearTimeout(voiceHoverTimer);
+  voiceHoverTimer = setTimeout(() => {
+    startReading(target, text.trim());
+  }, 500);
+}
+
+function handleVoiceMouseOut(e) {
+  if (!ACC_STATE.voiceReader) return;
+  clearTimeout(voiceHoverTimer);
+}
+
+function startReading(element, text) {
+  stopReading(); // Stop previous speech
+  
+  currentReadingElement = element;
+  currentReadingElement.classList.add('pedco-reading');
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'es-AR'; // Español Argentina
+  utterance.rate = 1.0;
+  
+  utterance.onend = () => {
+    if (currentReadingElement === element) {
+      currentReadingElement.classList.remove('pedco-reading');
+      currentReadingElement = null;
+    }
+  };
+  
+  utterance.onerror = () => {
+    if (currentReadingElement === element) {
+      currentReadingElement.classList.remove('pedco-reading');
+      currentReadingElement = null;
+    }
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopReading() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+  if (currentReadingElement) {
+    currentReadingElement.classList.remove('pedco-reading');
+    currentReadingElement = null;
   }
 }
 

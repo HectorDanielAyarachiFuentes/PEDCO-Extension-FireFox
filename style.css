@@ -9,3 +9,72 @@
  background:#222!important;
  color:white!important;
 }
+
+/* ==========================================
+   OPTIMIZACIÓN DE ESPACIO (Modo Sidebar)
+   ========================================== */
+
+/* ==========================================
+   OPTIMIZACIÓN DE ESPACIO (Modo Sidebar)
+   ========================================== */
+
+/* Hacer la barra azul (Navegación del curso) más compacta siempre */
+.secondary-navigation {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.secondary-navigation .nav-link {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.85rem !important;
+}
+
+/* Ocultar el pie de página gigante siempre */
+#page-footer {
+    display: none !important;
+}
+
+/* Achicar encabezados gigantes de curso siempre */
+.page-header-headings h1 {
+    font-size: 1.2rem !important;
+    margin-bottom: 0 !important;
+    line-height: 1.4 !important; /* Asegurar que la letra no se corte arriba */
+}
+
+/* ==========================================
+   AUTOHIDE AL SCROLLEAR (Transiciones de tamaño para no dejar huecos)
+   ========================================== */
+   
+nav.fixed-top, header.navbar, .secondary-navigation, #page-header {
+    transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease !important;
+    max-height: 400px; /* Alto máximo normal amplio */
+}
+
+body.pedco-hide-bars nav.fixed-top, 
+body.pedco-hide-bars .navbar.fixed-top,
+body.pedco-hide-bars header.navbar,
+body.pedco-hide-bars #theme_boost-drawers-courseindex,
+body.pedco-hide-bars #page-header,
+body.pedco-hide-bars .secondary-navigation {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+/* Compensar el margen fijo del body para que no quede un hueco */
+body, #page.drawers {
+    transition: padding 0.4s ease, margin 0.4s ease !important;
+}
+
+body.pedco-hide-bars {
+    padding-top: 0 !important;
+}
+body.pedco-hide-bars #page.drawers {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}

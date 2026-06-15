@@ -41,19 +41,31 @@ chrome.runtime.onMessage.addListener(function(request) {
 // SCROLL DETECTION (Ocultar barra automáticamente)
 // ==========================================
 let lastScrollY = 0;
-// Usamos true (capture phase) para atrapar el scroll incluso si ocurre dentro de un div (como el de Moodle)
+let isAnimating = false; // Bloqueo para evitar bucle infinito
+
 window.addEventListener('scroll', (e) => {
-  // Moodle a veces scrollea la ventana, a veces un contenedor
+  if (isAnimating) return;
+
   let currentScrollY = window.scrollY || document.documentElement.scrollTop;
   if (currentScrollY === 0 && e.target && e.target.scrollTop !== undefined) {
     currentScrollY = e.target.scrollTop;
   }
   
-  if (Math.abs(currentScrollY - lastScrollY) > 8) {
-    if (currentScrollY > lastScrollY && currentScrollY > 60) {
-      window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
-    } else if (currentScrollY < lastScrollY || currentScrollY < 20) {
-      window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
+  if (Math.abs(currentScrollY - lastScrollY) > 5) {
+    if (currentScrollY > 60 && currentScrollY > lastScrollY) {
+      if (!document.body.classList.contains('pedco-hide-bars')) {
+        isAnimating = true;
+        window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
+        document.body.classList.add('pedco-hide-bars');
+        setTimeout(() => { isAnimating = false; }, 400);
+      }
+    } else if (currentScrollY < 20) {
+      if (document.body.classList.contains('pedco-hide-bars')) {
+        isAnimating = true;
+        window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
+        document.body.classList.remove('pedco-hide-bars');
+        setTimeout(() => { isAnimating = false; }, 400);
+      }
     }
     lastScrollY = currentScrollY;
   }

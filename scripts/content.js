@@ -41,17 +41,82 @@ chrome.runtime.onMessage.addListener(function(request) {
 // SCROLL & HOVER DETECTION (Ocultar/Mostrar barra)
 // ==========================================
 let lastScrollY = 0;
-let isAnimating = false; // Bloqueo para evitar bucle infinito
+let isAnimating = false;
 
-// Mostrar barras si el mouse toca el borde superior de la pantalla
-window.addEventListener('mousemove', (e) => {
-  if (e.clientY < 30 && document.body.classList.contains('pedco-hide-bars')) {
+// Obtiene la posición de scroll actual desde CUALQUIER contenedor activo
+function getCurrentScrollY(eventTarget) {
+  // 1. Intentar leer del target del evento (lo más preciso)
+  if (eventTarget && eventTarget.nodeType === 1 && eventTarget !== document.documentElement) {
+    const sy = eventTarget.scrollTop;
+    if (sy > 0) return sy;
+  }
+  // 2. Scroll de window/html nativo
+  const winSY = window.scrollY || document.documentElement.scrollTop || 0;
+  if (winSY > 0) return winSY;
+  // 3. Buscar en candidatos conocidos de Moodle 4
+  const moodleCandidates = ['page', 'page-wrapper'];
+  for (const id of moodleCandidates) {
+    const el = document.getElementById(id);
+    if (el && el.scrollTop > 0) return el.scrollTop;
+  }
+  const drawers = document.querySelector('.drawers');
+  if (drawers && drawers.scrollTop > 0) return drawers.scrollTop;
+  return 0;
+}
+
+function hideBars() {
+  if (!isAnimating && !document.body.classList.contains('pedco-hide-bars')) {
+    isAnimating = true;
+    window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
+    document.body.classList.add('pedco-hide-bars');
+    setTimeout(() => { isAnimating = false; }, 400);
+  }
+}
+
+function showBars() {
+  if (!isAnimating && document.body.classList.contains('pedco-hide-bars')) {
     isAnimating = true;
     window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
     document.body.classList.remove('pedco-hide-bars');
     setTimeout(() => { isAnimating = false; }, 400);
   }
+}
+
+// Listener universal: capture:true en document intercepta scroll de CUALQUIER elemento
+document.addEventListener('scroll', (e) => {
+  const currentScrollY = getCurrentScrollY(e.target);
+
+  // Botón volver arriba
+  const backToTop = document.getElementById('pedco-back-to-top');
+  if (backToTop) backToTop.classList.toggle('visible', currentScrollY > 300);
+
+  if (isAnimating) { lastScrollY = currentScrollY; return; }
+
+  const delta = currentScrollY - lastScrollY;
+  lastScrollY = currentScrollY;
+
+  // Si estamos en el tope de la página (≤ 20px), las barras DEBEN estar visibles
+  if (currentScrollY <= 20) {
+    showBars();
+    return;
+  }
+
+  // Al bajar pasando los 40px → ocultar barras
+  if (currentScrollY > 40 && delta > 3) {
+    hideBars();
+  }
+  // Al subir sustancialmente cerca de la parte superior → volver a mostrar
+  else if (delta < -25 && currentScrollY < 180) {
+    showBars();
+  }
+}, { capture: true, passive: true });
+
+// Mostrar barras si el mouse toca el borde superior (≤ 30px)
+window.addEventListener('mousemove', (e) => {
+  if (e.clientY < 30) showBars();
 });
+
+
 
 // ==========================================
 // BOTÓN VOLVER ARRIBA
@@ -77,59 +142,13 @@ function injectBackToTop() {
     const wrapper = document.getElementById('page-wrapper');
     if (wrapper) try { wrapper.scrollTo(opts); } catch(e){}
     
-    if (window.pedcoScrollContainer) {
-      try { window.pedcoScrollContainer.scrollTo(opts); } catch(e){}
-    }
+
     
     window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
     document.body.classList.remove('pedco-hide-bars');
   });
 }
 injectBackToTop();
-
-window.addEventListener('scroll', (e) => {
-  let currentScrollY = window.scrollY || document.documentElement.scrollTop;
-  
-  // Detectar scroll interno de Moodle 4 de forma robusta
-  if (e.target && e.target.nodeType === 1) {
-    if (e.target.id === 'page' || e.target.id === 'page-wrapper' || e.target.classList.contains('drawers') || e.target.clientHeight >= window.innerHeight - 50) {
-      currentScrollY = e.target.scrollTop;
-      window.pedcoScrollContainer = e.target; // Guardar el contenedor que scrollea
-    }
-  }
-  
-  // 1. LÓGICA DEL BOTÓN VOLVER ARRIBA (Siempre se ejecuta, no se bloquea)
-  const backToTop = document.getElementById('pedco-back-to-top');
-  if (backToTop) {
-    if (currentScrollY > 300) {
-      backToTop.classList.add('visible');
-    } else {
-      backToTop.classList.remove('visible');
-    }
-  }
-
-  // 2. LÓGICA DE BARRAS DE NAVEGACIÓN (Se bloquea si está animando)
-  if (isAnimating) return;
-
-  if (Math.abs(currentScrollY - lastScrollY) > 5) {
-    if (currentScrollY > 60 && currentScrollY > lastScrollY) {
-      if (!document.body.classList.contains('pedco-hide-bars')) {
-        isAnimating = true;
-        window.parent.postMessage({ type: 'pedco_scroll', direction: 'down' }, '*');
-        document.body.classList.add('pedco-hide-bars');
-        setTimeout(() => { isAnimating = false; }, 400);
-      }
-    } else if (currentScrollY < 20) {
-      if (document.body.classList.contains('pedco-hide-bars')) {
-        isAnimating = true;
-        window.parent.postMessage({ type: 'pedco_scroll', direction: 'up' }, '*');
-        document.body.classList.remove('pedco-hide-bars');
-        setTimeout(() => { isAnimating = false; }, 400);
-      }
-    }
-    lastScrollY = currentScrollY;
-  }
-}, true);
 
 // ==========================================
 // DETECTAR CAMBIOS DE URL POR AJAX Y MANTENER BARRA INYECTADA
@@ -146,15 +165,13 @@ function injectToolbar() {
   if (!leftSection) return;
 
   const toolbarHtml = `
-    <div id="pedco-injected-toolbar" style="display: flex; align-items: center; gap: 6px; margin-left: 15px; flex-grow: 1;">
-      <button id="pedco-btn-back" title="Atrás" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">◀</button>
-      <button id="pedco-btn-forward" title="Adelante" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">▶</button>
-      <button id="pedco-btn-refresh" title="Recargar" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">🔄</button>
-      <button id="pedco-btn-home" title="Mis Cursos" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">🏠</button>
-      <button id="pedco-btn-acc" title="Accesibilidad" style="padding: 4px 8px; cursor: pointer; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: center;">♿</button>
-      <div id="pedco-url-bar" style="flex: 1; font-size: 11px; color: #6b7280; padding: 4px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: all; max-width: 250px;">
-        ${window.location.href}
-      </div>
+    <div id="pedco-injected-toolbar">
+      <button id="pedco-btn-back" title="Atrás">◀</button>
+      <button id="pedco-btn-forward" title="Adelante">▶</button>
+      <button id="pedco-btn-refresh" title="Recargar">🔄</button>
+      <button id="pedco-btn-home" title="Mis Cursos">🏠</button>
+      <button id="pedco-btn-acc" title="Accesibilidad">♿</button>
+      <div id="pedco-url-bar">${window.location.href}</div>
     </div>
   `;
   

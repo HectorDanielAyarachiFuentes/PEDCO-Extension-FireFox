@@ -1,31 +1,13 @@
-.pedco-dark{
- background:#111!important;
- color:#eee!important;
+.pedco-dark {
+ background: #111 !important;
+ color: #eee !important;
 }
 
 .pedco-dark .card,
 .pedco-dark .coursebox,
-.pedco-dark .activity{
- background:#222!important;
- color:white!important;
-}
-
-/* ==========================================
-   OPTIMIZACIÓN DE ESPACIO (Modo Sidebar)
-   ========================================== */
-
-/* ==========================================
-   OPTIMIZACIÓN DE ESPACIO (Modo Sidebar)
-   ========================================== */
-
-/* Hacer la barra azul (Navegación del curso) más compacta siempre */
-.secondary-navigation {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-.secondary-navigation .nav-link {
-    padding: 0.3rem 0.5rem !important;
-    font-size: 0.85rem !important;
+.pedco-dark .activity {
+ background: #222 !important;
+ color: white !important;
 }
 
 /* Ocultar el pie de página gigante siempre */
@@ -37,46 +19,113 @@
 .page-header-headings h1 {
     font-size: 1.2rem !important;
     margin-bottom: 0 !important;
-    line-height: 1.4 !important; /* Asegurar que la letra no se corte arriba */
+    line-height: 1.4 !important;
 }
 
 /* ==========================================
-   AUTOHIDE AL SCROLLEAR (Transiciones de tamaño para no dejar huecos)
+   OPTIMIZACIÓN DE ESPACIO Y BARRAS
    ========================================== */
-   
-nav.fixed-top, header.navbar, .secondary-navigation, #page-header {
-    transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease !important;
-    max-height: 400px; /* Alto máximo normal amplio */
+
+/* Barra blanca superior fija compacta (50px) sin envolver elementos */
+nav.fixed-top, header.navbar, .navbar.fixed-top {
+    height: 50px !important;
+    max-height: 50px !important;
+    min-height: 50px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    transition: transform 0.3s ease, opacity 0.3s ease !important;
+    z-index: 1030 !important;
 }
 
+/* La barra azul de Moodle (.secondary-navigation) debe fluir normalmente con la página.
+   Al ser position: relative, NO se queda pegada (sticky) sobre el texto al scrollear. */
+.secondary-navigation {
+    position: relative !important;
+    top: 0 !important;
+    margin-top: 0 !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    z-index: 100 !important;
+    box-shadow: none !important;
+}
+.secondary-navigation .nav-link {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.85rem !important;
+}
+
+/* Ajustar el padding inicial del contenedor principal para dejar exactamente 50px para la navbar */
+body #page.drawers, body #page-wrapper, body #page {
+    margin-top: 0 !important;
+    padding-top: 50px !important;
+    transition: padding-top 0.3s ease !important;
+}
+
+/* ==========================================
+   ESTADO OCULTO AL SCROLLEAR (pedco-hide-bars)
+   ========================================== */
+
+/* Ocultar la navbar superior deslizándola suavemente hacia arriba */
 body.pedco-hide-bars nav.fixed-top, 
 body.pedco-hide-bars .navbar.fixed-top,
-body.pedco-hide-bars header.navbar,
-body.pedco-hide-bars #theme_boost-drawers-courseindex,
-body.pedco-hide-bars #page-header,
-body.pedco-hide-bars .secondary-navigation {
-    max-height: 0 !important;
+body.pedco-hide-bars header.navbar {
+    transform: translateY(-100%) !important;
     opacity: 0 !important;
     pointer-events: none !important;
+}
+
+/* Eliminar el espacio superior del body para aprovechar el 100% de la pantalla */
+body.pedco-hide-bars #page.drawers,
+body.pedco-hide-bars #page-wrapper,
+body.pedco-hide-bars #page {
     padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    border: none !important;
+}
+
+/* Estilos de la barra de herramientas inyectada */
+#pedco-injected-toolbar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
     overflow: hidden !important;
 }
-
-/* Compensar el margen fijo del body para que no quede un hueco */
-body, #page.drawers {
-    transition: padding 0.4s ease, margin 0.4s ease !important;
+#pedco-injected-toolbar button {
+    padding: 2px 6px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background: #f9fafb !important;
+    color: #374151 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
+#pedco-injected-toolbar button:hover { background: #e5e7eb !important; border-color: #9ca3af !important; }
+#pedco-injected-toolbar button:active { background: #d1d5db !important; }
+#pedco-injected-toolbar button:disabled { opacity: 0.35 !important; cursor: default !important; }
 
-body.pedco-hide-bars {
-    padding-top: 0 !important;
-}
-body.pedco-hide-bars #page.drawers {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+#pedco-url-bar {
+    max-width: 160px !important;
+    min-width: 40px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+    color: #6b7280 !important;
+    background: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    user-select: all !important;
 }
 
 /* ==========================================
@@ -118,3 +167,4 @@ body.pedco-hide-bars #page.drawers {
 #pedco-back-to-top:active {
     transform: translateY(0) scale(0.95);
 }
+
